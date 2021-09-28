@@ -3,6 +3,7 @@ package mgm
 import (
 	"context"
 	"errors"
+	"github.com/kamva/mgm/v3/internal/sbo/convert"
 	"github.com/kamva/mgm/v3/internal/util"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -101,4 +102,12 @@ func DefaultConfigs() (*Config, *mongo.Client, *mongo.Database, error) {
 // to the `SetDefaultConfig` method.
 func defaultConf() *Config {
 	return &Config{CtxTimeout: 10 * time.Second}
+}
+
+func SetDefaultConfigWithServiceBinding(dbName string) error {
+	connectionString, err := convert.GetMongoDBConnectionString()
+	if err != nil {
+		return err
+	}
+	return SetDefaultConfig(nil, dbName, options.Client().ApplyURI(connectionString))
 }
